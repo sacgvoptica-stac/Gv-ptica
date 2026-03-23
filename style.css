@@ -50,10 +50,8 @@ a:hover{
 }
 
 .logo {
-    /* Remove a imagem do fluxo normal e posiciona onde você quiser */
-    position: absolute;
-    top: 86px;
-    left: 8px;  /* Exemplo: 20px da esquerda */
+    position: static;
+  text-align: center;
 }
 
 html, body{
