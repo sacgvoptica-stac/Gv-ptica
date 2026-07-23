@@ -4,15 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GV Óptica — Produto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="site-header">
   <div class="barra_de_anuncio">
     <p>Atendimento especializado - <a href="https://wa.me/5511992222361?text=Ol%C3%A1!%20Quero%20ser%20atendido." target="_blank">Fale conosco no WhatsApp</a></p>
+  </div>
+  <div class="marquee-bar">
+    <div class="marquee-track">
+      <span>10% de desconto pagando à vista</span>
+      <span>Frete grátis para toda a região</span>
+      <span>Parcele em até 10x sem juros</span>
+      <span>Atendimento especializado via WhatsApp</span>
+      <span>10% de desconto pagando à vista</span>
+      <span>Frete grátis para toda a região</span>
+      <span>Parcele em até 10x sem juros</span>
+      <span>Atendimento especializado via WhatsApp</span>
+    </div>
   </div>
 
   <div class="header__main">
@@ -30,6 +44,11 @@
         <li><a href="contato.html" class="nav-bar__link">Contato</a></li>
       </ul>
     </nav>
+    <div class="header__search" data-search-root>
+      <svg class="header__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" class="header__search-input" placeholder="Buscar produtos..." data-search-input autocomplete="off">
+      <div class="search-suggestions" data-search-suggestions></div>
+    </div>
 
     <div class="header__actions">
       <a href="conta.html" class="header__icon-btn">
@@ -47,7 +66,6 @@
     </div>
   </div>
 </header>
-<!-- END HEADER -->
 
 <section class="section">
   <div class="container">
@@ -59,17 +77,15 @@
 
 <section class="section" style="background:var(--cinza-bg);">
   <div class="container">
-    <h2 class="section-title">Você também pode gostar</h2>
+    <h2 class="section-title reveal">Você também pode gostar</h2>
     <div class="product-carousel" data-product-container="featured"></div>
   </div>
 </section>
-
 
 <a href="https://wa.me/5511992222361?text=Ol%C3%A1!%20Gostaria%20de%20atendimento." target="_blank" class="whatsapp_flutuante" aria-label="Falar no WhatsApp">
   <img src="assets/whatsapp.png" alt="WhatsApp">
 </a>
 
-<!-- FOOTER -->
 <footer class="site-footer">
   <div class="container">
     <div class="footer-col">
@@ -100,11 +116,13 @@
     © 2026 GV Óptica — Todos os direitos reservados
   </div>
 </footer>
-<!-- END FOOTER -->
 
 <script src="js/products.js"></script>
 <script src="js/data-service.js"></script>
+<script src="js/scroll-reveal.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/search.js"></script>
+<script src="js/zoom.js"></script>
 <script src="js/product-render.js"></script>
 </body>
 </html>

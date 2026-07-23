@@ -1,19 +1,3 @@
-/* ============================================
-   GV ÓPTICA — data-service.js
-   ============================================
-   Camada única de acesso a dados de AUTENTICAÇÃO
-   e CARRINHO. Hoje implementada com localStorage
-   (modo demonstração). Todas as páginas chamam
-   SOMENTE as funções deste arquivo — nunca acessam
-   localStorage diretamente.
-
-   PARA CONECTAR UM BACKEND REAL (Firebase/Supabase)
-   NO FUTURO:
-   Basta reescrever o corpo das funções abaixo para
-   chamar a API/SDK escolhida, mantendo a MESMA
-   assinatura (nome, parâmetros e formato do retorno).
-   Nenhuma outra página do site precisa mudar.
-   ============================================ */
 
 const DataService = (function () {
   const KEYS = {
@@ -22,7 +6,6 @@ const DataService = (function () {
     CART: "gv_cart",
   };
 
-  // ---------- Helpers internos ----------
   function readJSON(key, fallback) {
     try {
       const raw = localStorage.getItem(key);
@@ -43,8 +26,6 @@ const DataService = (function () {
     }
   }
 
-  // Hash simples só para não guardar senha em texto puro no demo.
-  // NÃO é criptografia segura — trocar por backend real antes de produção.
   function simpleHash(str) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -54,14 +35,6 @@ const DataService = (function () {
     return String(hash);
   }
 
-  // ============================================
-  // AUTENTICAÇÃO
-  // ============================================
-
-  /**
-   * Cadastra um novo usuário.
-   * @returns {{ok: boolean, error?: string, user?: object}}
-   */
   async function register(name, email, password) {
     const users = readJSON(KEYS.USERS, []);
     const emailNorm = email.trim().toLowerCase();
@@ -93,10 +66,6 @@ const DataService = (function () {
     return { ok: true, user: session };
   }
 
-  /**
-   * Autentica um usuário existente.
-   * @returns {{ok: boolean, error?: string, user?: object}}
-   */
   async function login(email, password) {
     const users = readJSON(KEYS.USERS, []);
     const emailNorm = email.trim().toLowerCase();
@@ -112,47 +81,47 @@ const DataService = (function () {
     return { ok: true, user: session };
   }
 
-  /** Encerra a sessão atual. */
   function logout() {
     localStorage.removeItem(KEYS.SESSION);
   }
 
-  /** Retorna o usuário logado (ou null). */
   function getCurrentUser() {
     return readJSON(KEYS.SESSION, null);
   }
 
-  // ============================================
-  // CARRINHO
-  // ============================================
-
-  /** Retorna o carrinho atual: array de {productId, qty} */
   function getCart() {
     return readJSON(KEYS.CART, []);
   }
 
-  /** Adiciona um produto (ou soma quantidade se já existir). */
-  function addToCart(productId, qty) {
+  function addToCart(productId, qty, payment) {
     qty = qty || 1;
+    payment = payment === "avista" ? "avista" : "parcelado";
     const cart = getCart();
     const existing = cart.find((item) => item.productId === productId);
     if (existing) {
       existing.qty += qty;
+      existing.payment = payment;
     } else {
-      cart.push({ productId: productId, qty: qty });
+      cart.push({ productId: productId, qty: qty, payment: payment });
     }
     writeJSON(KEYS.CART, cart);
     return cart;
   }
 
-  /** Remove um produto do carrinho por completo. */
+  function updatePayment(productId, payment) {
+    const cart = getCart();
+    const existing = cart.find((item) => item.productId === productId);
+    if (existing) existing.payment = payment === "avista" ? "avista" : "parcelado";
+    writeJSON(KEYS.CART, cart);
+    return cart;
+  }
+
   function removeFromCart(productId) {
     const cart = getCart().filter((item) => item.productId !== productId);
     writeJSON(KEYS.CART, cart);
     return cart;
   }
 
-  /** Atualiza a quantidade de um item (remove se qty <= 0). */
   function updateQty(productId, qty) {
     let cart = getCart();
     if (qty <= 0) {
@@ -165,35 +134,33 @@ const DataService = (function () {
     return cart;
   }
 
-  /** Esvazia o carrinho. */
   function clearCart() {
     writeJSON(KEYS.CART, []);
   }
 
-  /** Retorna a soma de quantidades no carrinho (para o badge do header). */
   function getCartCount() {
     return getCart().reduce((sum, item) => sum + item.qty, 0);
   }
 
-  /**
-   * Retorna os itens do carrinho já combinados com os dados
-   * do produto (nome, preço, imagem) vindos de products.js.
-   */
   function getCartDetailed() {
     return getCart()
       .map((item) => {
         const product = getProductById(item.productId);
         if (!product) return null;
+        const payment = item.payment === "avista" ? "avista" : "parcelado";
+        const precoUnitario =
+          payment === "avista" && product.precoAVista != null ? product.precoAVista : product.preco;
         return {
           product: product,
           qty: item.qty,
-          subtotal: product.preco * item.qty,
+          payment: payment,
+          precoUnitario: precoUnitario,
+          subtotal: precoUnitario * item.qty,
         };
       })
       .filter(Boolean);
   }
 
-  /** Retorna o valor total do carrinho. */
   function getCartTotal() {
     return getCartDetailed().reduce((sum, item) => sum + item.subtotal, 0);
   }
@@ -205,6 +172,7 @@ const DataService = (function () {
     getCurrentUser,
     getCart,
     addToCart,
+    updatePayment,
     removeFromCart,
     updateQty,
     clearCart,

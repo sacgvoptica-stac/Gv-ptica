@@ -1,6 +1,3 @@
-/* ============================================
-   GV ÓPTICA — cart-page.js
-   ============================================ */
 
 function renderCartPage() {
   const listEl = document.querySelector("[data-cart-list]");
@@ -22,12 +19,24 @@ function renderCartPage() {
   listEl.innerHTML = items
     .map(function (item) {
       const p = item.product;
+      const temAvista = p.precoAVista != null;
+      const formaPagamento = temAvista
+        ? '<div class="cart-item__pagamento" data-cart-pagamento="' + p.id + '">' +
+            '<button type="button" class="cart-item__pagamento-btn' + (item.payment === "parcelado" ? " is-active" : "") + '" data-cart-payment="' + p.id + '" data-value="parcelado">' +
+              (p.parcelas || 10) + "x de " + formatPrice(p.preco / (p.parcelas || 10)) +
+            "</button>" +
+            '<button type="button" class="cart-item__pagamento-btn' + (item.payment === "avista" ? " is-active" : "") + '" data-cart-payment="' + p.id + '" data-value="avista">' +
+              formatPrice(p.precoAVista) + " à vista (10% off)" +
+            "</button>" +
+          "</div>"
+        : "";
       return (
-        '<div class="cart-item" data-cart-item="' + p.id + '">' +
-          '<div class="cart-item__image"><img src="' + p.imagem + '" alt="' + p.nome + '"></div>' +
+        '<div class="cart-item reveal" data-cart-item="' + p.id + '">' +
+          '<a href="produto.html?id=' + p.id + '" class="cart-item__image"><img src="' + p.imagem + '" alt="' + p.nome + '"></a>' +
           '<div class="cart-item__info">' +
-            '<p class="cart-item__name">' + p.nome + "</p>" +
-            '<p class="cart-item__price">' + formatPrice(p.preco) + " cada</p>" +
+            '<a href="produto.html?id=' + p.id + '" class="cart-item__name-link"><p class="cart-item__name">' + p.nome + "</p></a>" +
+            '<p class="cart-item__price">' + formatPrice(item.precoUnitario) + " cada</p>" +
+            formaPagamento +
             '<div class="cart-item__qty">' +
               '<div class="qty-selector">' +
                 '<button type="button" data-qty-minus="' + p.id + '">−</button>' +
@@ -43,6 +52,8 @@ function renderCartPage() {
     })
     .join("");
 
+  if (window.ScrollReveal) ScrollReveal.refresh(listEl);
+
   const totalEl = document.querySelector("[data-cart-total]");
   if (totalEl) totalEl.textContent = formatPrice(DataService.getCartTotal());
 
@@ -52,7 +63,6 @@ function renderCartPage() {
     countEl.textContent = totalQty;
   }
 
-  // Bind eventos
   listEl.querySelectorAll("[data-qty-plus]").forEach(function (btn) {
     btn.addEventListener("click", function () {
       const id = btn.getAttribute("data-qty-plus");
@@ -78,13 +88,22 @@ function renderCartPage() {
       atualizarBadgeCarrinho();
     });
   });
+  listEl.querySelectorAll("[data-cart-payment]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const id = btn.getAttribute("data-cart-payment");
+      const value = btn.getAttribute("data-value");
+      DataService.updatePayment(id, value);
+      renderCartPage();
+    });
+  });
 }
 
 function montarMensagemPedido() {
   const items = DataService.getCartDetailed();
   let msg = "Olá! Gostaria de fazer o seguinte pedido:\n\n";
   items.forEach(function (item) {
-    msg += "• " + item.product.nome + " x" + item.qty + " — " + formatPrice(item.subtotal) + "\n";
+    const formaLabel = item.payment === "avista" ? "à vista, 10% off" : (item.product.parcelas || 10) + "x sem juros";
+    msg += "• " + item.product.nome + " x" + item.qty + " (" + formaLabel + ") — " + formatPrice(item.subtotal) + "\n";
   });
   msg += "\nTotal: " + formatPrice(DataService.getCartTotal());
   return msg;

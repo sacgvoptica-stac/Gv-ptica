@@ -1,6 +1,3 @@
-/* ============================================
-   GV ÓPTICA — auth-page.js
-   ============================================ */
 
 document.addEventListener("DOMContentLoaded", function () {
   const authRoot = document.querySelector("[data-auth-root]");
@@ -23,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // --- Alternância de abas Login / Cadastro ---
   const tabs = document.querySelectorAll(".auth-tab");
   const panels = document.querySelectorAll(".auth-panel");
   tabs.forEach(function (tab) {
@@ -35,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // --- Formulário de login ---
   const loginForm = document.querySelector("[data-login-form]");
   const loginError = document.querySelector("[data-login-error]");
   loginForm.addEventListener("submit", async function (e) {
@@ -53,7 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
     refreshView();
   });
 
-  // --- Formulário de cadastro ---
   const registerForm = document.querySelector("[data-register-form]");
   const registerError = document.querySelector("[data-register-error]");
   registerForm.addEventListener("submit", async function (e) {
@@ -72,14 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
     refreshView();
   });
 
-  // --- Logout ---
   const logoutBtn = document.querySelector("[data-logout]");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", function () {
       DataService.logout();
       atualizarSaudacaoConta();
 
-      // Sempre volta para a aba de login ao sair
       tabs.forEach((t) => t.classList.remove("is-active"));
       panels.forEach((p) => p.classList.remove("is-active"));
       document.querySelector('[data-tab="login"]').classList.add("is-active");

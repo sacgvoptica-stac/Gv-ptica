@@ -1,9 +1,3 @@
-/* ============================================
-   GV ÓPTICA — ui.js
-   Comportamentos globais compartilhados por
-   todas as páginas (menu, badge do carrinho,
-   saudação de conta, WhatsApp helper).
-   ============================================ */
 
 const WHATSAPP_NUMERO = "5511992222361";
 
@@ -28,7 +22,6 @@ function atualizarSaudacaoConta() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  // --- Menu mobile ---
   const toggleBtn = document.querySelector('[data-action="toggle-menu"]');
   const nav = document.querySelector(".header__desktop-nav");
 
@@ -43,11 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- Badge do carrinho e saudação de conta (em todas as páginas) ---
   atualizarBadgeCarrinho();
   atualizarSaudacaoConta();
 
-  // --- Marca o link do menu ativo conforme a página atual ---
   const currentPage = window.location.pathname.split("/").pop() || "index.html";
   document.querySelectorAll(".nav-bar__link").forEach(function (link) {
     const href = link.getAttribute("href");

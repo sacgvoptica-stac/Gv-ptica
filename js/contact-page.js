@@ -1,6 +1,3 @@
-/* ============================================
-   GV ÓPTICA — contact-page.js
-   ============================================ */
 
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector("[data-contact-form]");
